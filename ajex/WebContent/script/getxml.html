@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<style>
+	.container{
+		display: flex;
+		background: lightblue;
+	}
+	.box{
+		width:100px;
+		height:50px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+</style>
+<body>
+	<div class="container">
+		<div class="box">메뉴1</div>
+		<div class="box">메뉴2</div>
+		<div class="box">메뉴3</div>
+		<div class="box">메뉴4</div> <!-- 이벤트박스 -->
+	</div>
+	<div id="content"></div>
+<script>
+
+	let div = document.querySelector(".container .box:last-child")
+					  .addEventListener('click',makeRequest);
+	
+	//① XMLHttpRequest 객체 생성
+	let httpRequest = new XMLHttpRequest();
+	
+	function makeRequest(){
+		//② Ajax 요청의 형식 설정 
+		httpRequest.open("get", "../data/school.xml");
+		//③ Request를 서버로 전송하기 //send(null) or send() - get방식일때
+		httpRequest.send();
+		//④ 서버의 응답에 따른 처리
+		httpRequest.onreadystatechange = getXml;  // getJson을 호출해줘.
+	}
+	function getXml(){
+		//응답할 영역 가져오기
+		let content = document.querySelector("#content");
+		if(httpRequest.readyState == 4){
+			if (httpRequest.status == 200) {
+				console.log(httpRequest.responseXML);
+				
+				let res =httpRequest.responseXML;
+				//let school = res.getElementsByTagName("school");
+				//content.innerText = res[0].innerHTML; 
+				
+				let title =res.getElementsByTagName("title");
+				let time =res.getElementsByTagName("time");
+				let teacher =res.getElementsByTagName("teacher");
+				
+				let result = "<ul><li>title : "+title[0].innerHTML+"</li>";
+				result += "<li>time : "+time[0].innerHTML+"</li>";
+				result += "<li>teacher : "+teacher[0].innerHTML+"</li></ul>";
+				content.innerHTML = result;
+			}else{
+				content.innerHTML = "데이터없음"
+			}
+		}
+	}
+
+</script>	
+</body>
+</html>
